@@ -1,11 +1,38 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "eu.ansvar/austrian-cybersecurity-mcp",
-  "description": "Query CERT.at (Austrian Computer Emergency Response Team) security guidelines, technical reports, advisories, and cybersecurity frameworks",
-  "repository": { "url": "https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp", "source": "github" },
+  "description": "CERT.at (Austrian CERT) MCP server — security guidelines, advisories, and cybersecurity frameworks for Austria",
+  "repository": {
+    "url": "https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp",
+    "source": "github"
+  },
   "homepage": "https://ansvar.eu",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
-  "keywords": ["cert-at", "austrian-cybersecurity", "austria", "information-security", "compliance", "mcp", "ansvar"],
-  "packages": [{ "registryType": "npm", "identifier": "@ansvar/austrian-cybersecurity-mcp", "version": "0.1.0", "transport": { "type": "stdio" } }]
+  "keywords": [
+    "cybersecurity",
+    "austria",
+    "regulation",
+    "compliance",
+    "mcp"
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@ansvar/austrian-cybersecurity-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    },
+    {
+      "registryType": "npm",
+      "identifier": "@ansvar/austrian-cybersecurity-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "streamable-http",
+        "url": "https://mcp.ansvar.eu/austrian-cybersecurity/mcp"
+      }
+    }
+  ]
 }
