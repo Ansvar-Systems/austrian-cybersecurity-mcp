@@ -18,6 +18,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { searchGuidance, getGuidance, searchAdvisories, getAdvisory, listFrameworks } from "./db.js";
+import { buildCitation } from './citation.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -119,7 +120,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const parsed = GetGuidanceArgs.parse(args);
         const doc = getGuidance(parsed.reference);
         if (!doc) return errorContent(`Guidance document not found: ${parsed.reference}`);
-        return textContent(doc);
+        return textContent({
+          ...(typeof doc === 'object' ? doc : { data: doc }),
+          _citation: buildCitation(
+            doc.reference || parsed.reference,
+            doc.title || doc.name || parsed.reference,
+            'at_cyber_get_guidance',
+            { reference: parsed.reference },
+            doc.url || doc.source_url || null,
+          ),
+        });
       }
       case "at_cyber_search_advisories": {
         const parsed = SearchAdvisoriesArgs.parse(args);
@@ -130,7 +140,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const parsed = GetAdvisoryArgs.parse(args);
         const advisory = getAdvisory(parsed.reference);
         if (!advisory) return errorContent(`Advisory not found: ${parsed.reference}`);
-        return textContent(advisory);
+        return textContent({
+          ...(typeof advisory === 'object' ? advisory : { data: advisory }),
+          _citation: buildCitation(
+            advisory.reference || parsed.reference,
+            advisory.title || advisory.subject || parsed.reference,
+            'at_cyber_get_advisory',
+            { reference: parsed.reference },
+            advisory.url || advisory.source_url || null,
+          ),
+        });
       }
       case "at_cyber_list_frameworks": {
         const frameworks = listFrameworks();
