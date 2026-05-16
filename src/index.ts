@@ -18,7 +18,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import { searchGuidance, getGuidance, searchAdvisories, getAdvisory, listFrameworks } from "./db.js";
-import { buildCitation } from './citation.js';
+import { buildCitation, buildItemAttribution } from './citation.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -114,7 +114,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       case "at_cyber_search_guidance": {
         const parsed = SearchGuidanceArgs.parse(args);
-        return textContent({ results: searchGuidance({ query: parsed.query, type: parsed.type, series: parsed.series, status: parsed.status, limit: parsed.limit }), count: searchGuidance({ query: parsed.query, type: parsed.type, series: parsed.series, status: parsed.status, limit: parsed.limit }).length });
+        const results = searchGuidance({ query: parsed.query, type: parsed.type, series: parsed.series, status: parsed.status, limit: parsed.limit });
+        // Source Attribution Standard: per-item _citation on every served item.
+        // Also fixes pre-existing double-call to searchGuidance (was called twice in one return).
+        const resultsWithCitation = results.map((r) => {
+          const row = r as unknown as Record<string, unknown>;
+          return {
+            ...row,
+            _citation: buildItemAttribution(
+              row["url"] != null ? String(row["url"]) : (row["source_url"] != null ? String(row["source_url"]) : undefined),
+            ),
+          };
+        });
+        return textContent({ results: resultsWithCitation, count: resultsWithCitation.length });
       }
       case "at_cyber_get_guidance": {
         const parsed = GetGuidanceArgs.parse(args);
@@ -137,7 +149,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       case "at_cyber_search_advisories": {
         const parsed = SearchAdvisoriesArgs.parse(args);
         const results = searchAdvisories({ query: parsed.query, severity: parsed.severity, limit: parsed.limit });
-        return textContent({ results, count: results.length });
+        // Source Attribution Standard: per-item _citation on every served item.
+        const resultsWithCitation = results.map((r) => {
+          const row = r as unknown as Record<string, unknown>;
+          return {
+            ...row,
+            _citation: buildItemAttribution(
+              row["url"] != null ? String(row["url"]) : (row["source_url"] != null ? String(row["source_url"]) : undefined),
+            ),
+          };
+        });
+        return textContent({ results: resultsWithCitation, count: resultsWithCitation.length });
       }
       case "at_cyber_get_advisory": {
         const parsed = GetAdvisoryArgs.parse(args);
@@ -159,7 +181,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       case "at_cyber_list_frameworks": {
         const frameworks = listFrameworks();
-        return textContent({ frameworks, count: frameworks.length });
+        // Source Attribution Standard: per-item _citation on every served item.
+        const frameworksWithCitation = frameworks.map((f) => {
+          const row = f as unknown as Record<string, unknown>;
+          return {
+            ...row,
+            _citation: buildItemAttribution(
+              row["url"] != null ? String(row["url"]) : undefined,
+            ),
+          };
+        });
+        return textContent({ frameworks: frameworksWithCitation, count: frameworksWithCitation.length });
       }
       case "at_cyber_about":
         return textContent({

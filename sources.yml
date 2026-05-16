@@ -1,0 +1,75 @@
+# sources.yml — data provenance contract for austrian-cybersecurity-mcp.
+#
+# Status: GREEN as of 2026-05-16. CERT.at + GovCERT (planned) operate under
+# Austrian IWG (Informationsweiterverwendungsgesetz) re-use obligations as
+# public-task csirts under NISG §15.
+
+schema_version: "1.0"
+mcp_name: "Austrian Cybersecurity MCP"
+category: "regulation"
+jurisdiction: "Austria"
+
+sources:
+  - name: "CERT.at"
+    authority: "CERT.at — Austrian National CSIRT, operated by nic.at GmbH on behalf of BMI/BKA under NISG §15"
+    official_url: "https://www.cert.at"
+    retrieval_method: "AUTOMATED"
+    retrieval_script: "scripts/ingest-cert-at.ts"
+    retrieval_feeds:
+      - "https://www.cert.at/de/blog/rss_2.0.xml"
+      - "https://www.cert.at/de/specials/rss_2.0.xml"
+      - "https://www.cert.at/de/warnings/rss_2.0.xml"
+    format:
+      - "HTML"
+      - "RSS-2.0"
+    authentication: "none"
+    update_frequency: "weekly"
+    license:
+      spdx: "LicenseRef-AT-IWG-publicsector"
+      type: "Austrian IWG (Informationsweiterverwendungsgesetz) re-use, attribution required"
+      url: "https://www.cert.at"
+      summary: >-
+        Austrian Informationsweiterverwendungsgesetz (IWG, BGBl I Nr. 76/2023)
+        implements EU Open Data Directive 2019/1024 and binds public-task bodies
+        to re-use defaults. CERT.at is a public-task csirt under NISG §15. The
+        site's robots.txt 2026-05-16 declared `Disallow:` (empty = explicitly
+        allow all crawlers) and RSS feeds are by-design syndication endpoints
+        (implicit re-use grant). CDSM Art. 4 / §42h UrhG TDM exception applies
+        on its face (no machine-readable reservation per 2026-05-16 signal
+        check). Attribution `CERT.at / nic.at GmbH` required.
+    legal_basis:
+      - "Austrian IWG (Informationsweiterverwendungsgesetz, BGBl I Nr. 76/2023) — public-task csirt"
+      - "CDSM Art. 4 / §42h UrhG TDM exception — no machine-readable reservation as of 2026-05-16"
+      - "RSS feeds = implicit syndication grant"
+    verification:
+      registry_status: "whitelisted"
+      registry_entry: "infrastructure/policy/source-authority-registry.yml (host: www.cert.at)"
+      last_verified_at: "2026-05-16"
+      verified_by: "claude-austrian-licensing-audit-2026-05-16"
+    coverage:
+      scope: >-
+        CERT.at security advisories, warnings, specials, blog posts. Frameworks
+        catalog (NIS2 mapping, Cyber Essentials AT, BSI baseline cross-references).
+      item_count: 0    # populated after next ingest run
+    languages:
+      - "de"
+      - "en"
+    carve_outs:
+      - "Photos and visual identity (CERT.at + nic.at logos) excluded from ingestion"
+
+# Source-attribution contract enforced at response time:
+#   Every search/get tool response item carries _citation.{publisher, license, source_url}
+#   matching the values declared above. License string LicenseRef-AT-IWG-publicsector
+#   signals to the gateway that this is Austrian-IWG-cleared. Attribution required —
+#   the _citation.publisher field surfaces "cert.at" so consuming agents satisfy CERT.at's
+#   attribution requirement automatically.
+#
+# Per-item source_url accuracy is a known gap as of 2026-05-16: the current DB schema
+# does not capture per-item URLs during ingestion. Responses fall back to publisher
+# base URL https://www.cert.at. Closes when DB schema + ingest script update lands.
+
+# Future-expansion sources (not currently ingested):
+expansion_candidates:
+  - host: "govcert.gv.at"
+    authority: "GovCERT.at — Austrian Government CSIRT (BCISA-operated)"
+    relevance: "Government-specific cyber incident coordination; expected GREEN same basis as CERT.at"
