@@ -2,26 +2,49 @@
   "name": "@ansvar/austrian-cybersecurity-mcp",
   "version": "0.1.0",
   "mcpName": "eu.ansvar/austrian-cybersecurity-mcp",
-  "description": "CERT.at (Austrian CERT) MCP server — security guidelines, advisories, and cybersecurity frameworks for Austria",
+  "description": "CERT.at (Austrian CERT) MCP server \u2014 security guidelines, advisories, and cybersecurity frameworks for Austria",
   "type": "module",
-  "main": "dist/src/index.js",
-  "bin": { "austrian-cybersecurity-mcp": "dist/src/index.js" },
-  "files": ["dist", "server.json"],
-  "engines": { "node": ">=20" },
-  "repository": { "type": "git", "url": "git+https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp.git" },
-  "bugs": { "url": "https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp/issues" },
+  "main": "dist/index.js",
+  "bin": {
+    "austrian-cybersecurity-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp/issues"
+  },
   "homepage": "https://github.com/Ansvar-Systems/austrian-cybersecurity-mcp#readme",
-  "keywords": ["mcp", "model-context-protocol", "ai", "claude", "cert-at", "austrian-cybersecurity", "austria", "cybersecurity", "compliance", "ansvar"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "claude",
+    "cert-at",
+    "austrian-cybersecurity",
+    "austria",
+    "cybersecurity",
+    "compliance",
+    "ansvar"
+  ],
   "author": "Ansvar Systems AB <hello@ansvar.ai>",
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/http-server.ts",
-    "start": "node dist/src/http-server.js",
+    "start": "node dist/http-server.js",
     "seed": "npx tsx scripts/seed-sample.ts",
-    "ingest": "npx tsx scripts/ingest-cert-at.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:contract": "echo \"No contract tests yet\" && exit 0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
