@@ -120,14 +120,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const parsed = GetGuidanceArgs.parse(args);
         const doc = getGuidance(parsed.reference);
         if (!doc) return errorContent(`Guidance document not found: ${parsed.reference}`);
+        // Citation builder probes optional legacy fields (name/url/source_url)
+        // that the legacy schema may carry but the strict Guidance type doesn't declare.
+        const docLegacy = doc as unknown as Record<string, unknown>;
         return textContent({
           ...(typeof doc === 'object' ? doc : { data: doc }),
           _citation: buildCitation(
             doc.reference || parsed.reference,
-            doc.title || doc.name || parsed.reference,
+            doc.title || (docLegacy["name"] as string | undefined) || parsed.reference,
             'at_cyber_get_guidance',
             { reference: parsed.reference },
-            doc.url || doc.source_url || null,
+            (docLegacy["url"] as string | null | undefined) || (docLegacy["source_url"] as string | null | undefined) || null,
           ),
         });
       }
@@ -140,14 +143,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const parsed = GetAdvisoryArgs.parse(args);
         const advisory = getAdvisory(parsed.reference);
         if (!advisory) return errorContent(`Advisory not found: ${parsed.reference}`);
+        // Citation builder probes optional legacy fields (subject/url/source_url)
+        // that the legacy schema may carry but the strict Advisory type doesn't declare.
+        const advLegacy = advisory as unknown as Record<string, unknown>;
         return textContent({
           ...(typeof advisory === 'object' ? advisory : { data: advisory }),
           _citation: buildCitation(
             advisory.reference || parsed.reference,
-            advisory.title || advisory.subject || parsed.reference,
+            advisory.title || (advLegacy["subject"] as string | undefined) || parsed.reference,
             'at_cyber_get_advisory',
             { reference: parsed.reference },
-            advisory.url || advisory.source_url || null,
+            (advLegacy["url"] as string | null | undefined) || (advLegacy["source_url"] as string | null | undefined) || null,
           ),
         });
       }
